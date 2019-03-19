@@ -6,26 +6,21 @@ namespace Convertor
 {
     public static class Converter
     {
-        public static bool Convert(string fileInputName, string fileOutputName, Encoding inEncoding, Encoding outEncoding, bool overwrite = false)
+        public static bool Convert(string fileInputName, string fileOutputName, Encoding inEncoding, Encoding outEncoding)
         {
             try
             {
-                if (File.Exists(fileInputName + ".txt"))
-                {
-                    using (StreamReader sr = new StreamReader(fileInputName + ".txt", inEncoding))
+                using (StreamReader sr = new StreamReader(fileInputName, inEncoding))
+                {                    
+                    using (StreamWriter sw = new StreamWriter(fileOutputName, false, outEncoding))
                     {
-                        if (!overwrite) fileOutputName = GetUniqueName(fileOutputName);
-
-                        using (StreamWriter sw = new StreamWriter(fileOutputName + ".txt", false, outEncoding))
+                        var fileInfo = new FileInfo(fileInputName);
+                        var bufferSize = Math.Min(1024*1024, fileInfo.Length);
+                        var buffer = new char[bufferSize];
+                        while (!sr.EndOfStream)
                         {
-                            while (!sr.EndOfStream)
-                            {
-                                FileInfo fileInfo = new FileInfo(fileInputName + ".txt");
-                                var bufferSize = Math.Min(1024 * 1024, fileInfo.Length - 3);
-                                char[] buffer = new char[bufferSize];
-                                sr.ReadBlock(buffer, 0, (int) bufferSize);
-                                sw.Write(buffer);
-                            }
+                            sr.Read(buffer, 0, (int)bufferSize);
+                            sw.Write(buffer);
                         }
                     }
                 }
@@ -35,21 +30,6 @@ namespace Convertor
                 return false;
             }
             return true;
-        }
-
-        private static string GetUniqueName(string name)
-        {
-            Int32 i = 1;
-            string temp = name + $" ({i})";
-            if (!File.Exists(name +".txt")) return name;
-            
-            while (File.Exists(temp + ".txt"))
-            {
-                i++;
-                temp = name + $" ({i})";
-            }
-
-            return temp;
         }
     }
 }

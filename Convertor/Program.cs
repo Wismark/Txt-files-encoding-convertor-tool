@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 
 namespace Convertor
@@ -9,19 +10,23 @@ namespace Convertor
         {
            try
            {
-               var strParams = new string[4]; 
+               string fileInputName=""; string fileOutputName="";
+               Encoding inEncoding = Encoding.Default; Encoding outEncoding = Encoding.Default;
+               bool overwrite = false;
 
                 for (var i = 0; i < args.Length; i++)
                 {
-                    if (args[i] == "-i") strParams[0] = args[i + 1];
-                    if (args[i] == "-o") strParams[1] = args[i + 1];
-                    if (args[i] == "-if") strParams[2] = args[i + 1];
-                    if (args[i] == "-of") strParams[3] = args[i + 1];
+                    if (args[i] == "-i") inEncoding = Encoding.GetEncoding(Int32.Parse(args[i + 1]));  
+                    if (args[i] == "-o") outEncoding = Encoding.GetEncoding(Int32.Parse(args[i + 1]));
+                    if (args[i] == "-if") fileInputName = args[i + 1];
+                    if (args[i] == "-of") fileOutputName = args[i + 1];
+                    if (args[i] == "-ow") overwrite = args[i + 1] == "true";
                 }
 
-               var inEncoding = Encoding.GetEncoding(Int32.Parse(strParams[0]));
-               var outEncoding = Encoding.GetEncoding(Int32.Parse(strParams[1]));
-               var success = Converter.Convert(strParams[2], strParams[3], inEncoding, outEncoding);
+                if (!File.Exists(fileInputName)) throw new FileNotFoundException();
+                if (!overwrite) fileOutputName = GetUniqueName(fileOutputName);
+
+                var success = Converter.Convert(fileInputName, fileOutputName, inEncoding, outEncoding);
 
                Console.WriteLine(success ? "Success" : "Fail");
            }
@@ -29,6 +34,21 @@ namespace Convertor
            {
                Console.WriteLine(e);
            }          
+        }
+
+        private static string GetUniqueName(string name)
+        {
+            Int32 i = 1;
+            string temp = $" ({i})" + name;
+            if (!File.Exists(name)) return name;
+
+            while (File.Exists(temp))
+            {
+                i++;
+                temp = $" ({i})" + name;
+            }
+
+            return temp;
         }
     }
 
