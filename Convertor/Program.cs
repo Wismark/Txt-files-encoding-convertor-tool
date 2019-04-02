@@ -23,9 +23,9 @@ namespace Convertor
                     if (args[i] == "-ow") overwrite = args[i + 1] == "true";
                 }
 
-                if (!File.Exists(fileInputName))
+                if (!File.Exists(fileInputName) || !File.Exists(fileOutputName))
                 {
-                    Console.WriteLine("File not exists!");
+                    throw new FileNotFoundException("Input or output not exists!");
                 }
 
                 if (!overwrite)
