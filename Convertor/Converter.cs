@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace Convertor
@@ -10,17 +9,15 @@ namespace Convertor
         {
             try
             {
-                using (StreamReader sr = new StreamReader(fileInputName, inEncoding))
+                using (var sr = new StreamReader(fileInputName, inEncoding))
                 {                    
-                    using (StreamWriter sw = new StreamWriter(fileOutputName, false, outEncoding))
+                    using (var sw = new StreamWriter(fileOutputName, false, outEncoding))
                     {
-                        var fileInfo = new FileInfo(fileInputName);
-                        var bufferSize = Math.Min(1024*1024, fileInfo.Length);
+                        var bufferSize = 10000;
                         var buffer = new char[bufferSize];
                         while (!sr.EndOfStream)
                         {
-                            sr.Read(buffer, 0, (int)bufferSize);
-                            sw.Write(buffer);
+                            sw.Write(buffer, 0, sr.Read(buffer, 0, bufferSize));
                         }
                     }
                 }

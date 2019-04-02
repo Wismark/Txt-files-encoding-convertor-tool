@@ -10,25 +10,32 @@ namespace Convertor
         {
            try
            {
-               string fileInputName=""; string fileOutputName="";
+               string fileInputName="", fileOutputName="";
                Encoding inEncoding = Encoding.Default; Encoding outEncoding = Encoding.Default;
                bool overwrite = false;
 
                 for (var i = 0; i < args.Length; i++)
                 {
-                    if (args[i] == "-i") inEncoding = Encoding.GetEncoding(Int32.Parse(args[i + 1]));  
-                    if (args[i] == "-o") outEncoding = Encoding.GetEncoding(Int32.Parse(args[i + 1]));
+                    if (args[i] == "-i") inEncoding = Encoding.GetEncoding(int.Parse(args[i + 1]));  
+                    if (args[i] == "-o") outEncoding = Encoding.GetEncoding(int.Parse(args[i + 1]));
                     if (args[i] == "-if") fileInputName = args[i + 1];
                     if (args[i] == "-of") fileOutputName = args[i + 1];
                     if (args[i] == "-ow") overwrite = args[i + 1] == "true";
                 }
 
-                if (!File.Exists(fileInputName)) throw new FileNotFoundException();
-                if (!overwrite) fileOutputName = GetUniqueName(fileOutputName);
+                if (!File.Exists(fileInputName))
+                {
+                    Console.WriteLine("File not exists!");
+                }
+
+                if (!overwrite)
+                {
+                    fileOutputName = GetUniqueName(fileOutputName);
+                }
 
                 var success = Converter.Convert(fileInputName, fileOutputName, inEncoding, outEncoding);
 
-               Console.WriteLine(success ? "Success" : "Fail");
+                Console.WriteLine(success ? "Success" : "Fail");
            }
            catch (Exception e)
            {
@@ -38,9 +45,12 @@ namespace Convertor
 
         private static string GetUniqueName(string name)
         {
-            Int32 i = 1;
+            int i = 1;
             string temp = $" ({i})" + name;
-            if (!File.Exists(name)) return name;
+            if (!File.Exists(name))
+            {
+                return name;
+            }
 
             while (File.Exists(temp))
             {
