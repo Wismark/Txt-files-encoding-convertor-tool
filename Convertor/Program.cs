@@ -10,7 +10,7 @@ namespace Convertor
         {
            try
            {
-               string fileInputName="", fileOutputName="";
+               string fileInputName="", fileOutputName="defaultOutput.txt";
                Encoding inEncoding = Encoding.Default; Encoding outEncoding = Encoding.Default;
                bool overwrite = false;
 
@@ -23,9 +23,9 @@ namespace Convertor
                     if (args[i] == "-ow") overwrite = args[i + 1] == "true";
                 }
 
-                if (!File.Exists(fileInputName) || !File.Exists(fileOutputName))
+                if (!File.Exists(fileInputName))
                 {
-                    throw new FileNotFoundException("Input or output not exists!");
+                    throw new FileNotFoundException("Input file not exists!");
                 }
 
                 if (!overwrite)
